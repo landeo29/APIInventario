@@ -20,8 +20,8 @@ namespace APIInventario.API.Controllers
         public async Task<IActionResult> ListarProductos()
         {
             var productos = await _productoRepo.ObtenerTodosAsync();
-            if (!productos.Any())
-                return NotFound("No hay productos registrados.");
+            if (productos == null || !productos.Any())
+                return NotFound("¡No hay productos disponibles!");
 
             return Ok(productos);
         }
@@ -29,19 +29,31 @@ namespace APIInventario.API.Controllers
         [HttpPost("crear")]
         public async Task<IActionResult> CrearProducto([FromBody] Producto producto)
         {
-            if (string.IsNullOrWhiteSpace(producto.Nombre) || producto.Precio <= 0)
-                return BadRequest("Datos inválidos para el producto.");
+            if (!ModelState.IsValid)
+                return BadRequest("Datos inválidos.");
+
+            if (producto.Cantidad < 0)
+                return BadRequest("La cantidad no puede ser negativa.");
+
+            if (producto.Precio < 0)
+                return BadRequest("El precio no puede ser negativo.");
+
+            if (string.IsNullOrWhiteSpace(producto.Nombre))
+                return BadRequest("El nombre del producto no puede estar vacío.");
 
             await _productoRepo.AgregarAsync(producto);
-            return Ok("Producto creado con éxito!");
+            return Ok("¡Producto creado con éxito!");
         }
 
         [HttpGet("obtener/{id}")]
         public async Task<IActionResult> ObtenerProducto(int id)
         {
+            if (id <= 0)
+                return BadRequest("El ID debe ser mayor a 0.");
+
             var producto = await _productoRepo.ObtenerPorIdAsync(id);
             if (producto == null)
-                return NotFound("Producto no encontrado.");
+                return NotFound("¡Producto no encontrado!");
 
             return Ok(producto);
         }
@@ -49,29 +61,41 @@ namespace APIInventario.API.Controllers
         [HttpPut("actualizar/{id}")]
         public async Task<IActionResult> ActualizarProducto(int id, [FromBody] Producto productoActualizado)
         {
+            if (!ModelState.IsValid)
+                return BadRequest("Datos inválidos.");
+
+            if (id <= 0)
+                return BadRequest("El ID debe ser mayor a 0.");
+
+            if (productoActualizado.Cantidad < 0)
+                return BadRequest("La cantidad no puede ser negativa.");
+
+            if (productoActualizado.Precio < 0)
+                return BadRequest("El precio no puede ser negativo.");
+
+            if (string.IsNullOrWhiteSpace(productoActualizado.Nombre))
+                return BadRequest("El nombre del producto no puede estar vacío.");
+
             var producto = await _productoRepo.ObtenerPorIdAsync(id);
             if (producto == null)
-                return NotFound("Producto no encontrado.");
+                return NotFound("¡Producto no encontrado!");
 
-            producto.Nombre = productoActualizado.Nombre;
-            producto.Descripcion = productoActualizado.Descripcion;
-            producto.Precio = productoActualizado.Precio;
-            producto.Cantidad = productoActualizado.Cantidad;
-            producto.CategoriaId = productoActualizado.CategoriaId;
-
-            await _productoRepo.ActualizarAsync(producto);
-            return Ok("Producto actualizado con éxito!");
+            await _productoRepo.ActualizarAsync(productoActualizado);
+            return Ok("¡Producto actualizado con éxito!");
         }
 
         [HttpDelete("eliminar/{id}")]
         public async Task<IActionResult> EliminarProducto(int id)
         {
+            if (id <= 0)
+                return BadRequest("El ID debe ser mayor a 0.");
+
             var producto = await _productoRepo.ObtenerPorIdAsync(id);
             if (producto == null)
-                return NotFound("Producto no encontrado.");
+                return NotFound("¡Producto no encontrado!");
 
             await _productoRepo.EliminarAsync(id);
-            return Ok("Producto eliminado con éxito!");
+            return Ok("¡Producto eliminado con éxito!");
         }
     }
 }
