@@ -1,4 +1,4 @@
-﻿namespace APIINVENTARIO.Core.Models
+﻿namespace APIInventario.Core.Models
 {
     public class Usuario
     {

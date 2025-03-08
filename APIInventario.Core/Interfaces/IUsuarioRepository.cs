@@ -1,6 +1,6 @@
-﻿using APIINVENTARIO.Core.Models;
+﻿using APIInventario.Core.Models;
 
-namespace APIINVENTARIO.Core.Interfaces
+namespace APIInventario.Core.Interfaces
 {
     public interface IUsuarioRepository
     {

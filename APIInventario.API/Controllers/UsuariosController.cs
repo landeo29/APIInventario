@@ -1,5 +1,5 @@
-﻿using APIINVENTARIO.Core.Interfaces;
-using APIINVENTARIO.Core.Models;
+﻿using APIInventario.Core.Interfaces;
+using APIInventario.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIINVENTARIO.API.Controllers

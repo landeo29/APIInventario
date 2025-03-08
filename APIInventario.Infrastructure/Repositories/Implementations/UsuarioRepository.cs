@@ -1,9 +1,9 @@
-﻿using APIINVENTARIO.Core.Interfaces;
-using APIINVENTARIO.Core.Models;
-using APIINVENTARIO.Infrastructure.Data;
+﻿using APIInventario.Core.Interfaces;
+using APIInventario.Core.Models;
+using APIInventario.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace APIINVENTARIO.Infrastructure.Repositories
+namespace APIInventario.Infrastructure.Repositories.Implementations
 {
     public class UsuarioRepository : IUsuarioRepository
     {
