@@ -19,9 +19,14 @@ namespace APIInventario.Infrastructure.Repositories.Implementations
             return await _context.Usuarios.ToListAsync();
         }
 
-        public async Task<Usuario?> ObtenerPorIdAsync(int id)
+        public async Task<Usuario> ObtenerPorIdAsync(int id)
         {
             return await _context.Usuarios.FindAsync(id);
+        }
+
+        public async Task<Usuario> ObtenerPorNombreAsync(string username)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Username == username);
         }
 
         public async Task AgregarAsync(Usuario usuario)
