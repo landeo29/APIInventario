@@ -1,12 +1,14 @@
 ﻿using APIInventario.Core.Interfaces;
 using APIInventario.Core.Models;
 using APIInventario.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIInventario.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class CategoriasController : ControllerBase
     {
         private readonly ICategoriaRepository _categoriaRepo;

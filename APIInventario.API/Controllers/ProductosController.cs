@@ -1,12 +1,14 @@
 ﻿using APIInventario.Core.Interfaces;
 using APIInventario.Core.Models;
 using APIInventario.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIInventario.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductosController : ControllerBase
     {
         private readonly IProductoRepository _productoRepo;
@@ -17,6 +19,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpGet("listar")]
+        [Authorize(Roles = "admin,empleado")]
         public async Task<IActionResult> ListarProductos()
         {
             var productos = await _productoRepo.ObtenerTodosAsync();
@@ -27,6 +30,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpPost("crear")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CrearProducto([FromBody] Producto producto)
         {
             if (!ModelState.IsValid)
@@ -46,6 +50,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpGet("obtener/{id}")]
+        [Authorize(Roles = "admin,empleado")]
         public async Task<IActionResult> ObtenerProducto(int id)
         {
             if (id <= 0)
@@ -59,6 +64,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpPut("actualizar/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> ActualizarProducto(int id, [FromBody] Producto productoActualizado)
         {
             if (!ModelState.IsValid)
@@ -85,6 +91,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpDelete("eliminar/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> EliminarProducto(int id)
         {
             if (id <= 0)
