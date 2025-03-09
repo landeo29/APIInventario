@@ -20,6 +20,8 @@
     </PackageReference>
 
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
+
+    <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

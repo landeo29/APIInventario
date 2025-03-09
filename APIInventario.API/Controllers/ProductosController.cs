@@ -1,4 +1,4 @@
-﻿using APIInventario.Core.Interfaces;
+﻿using APIInventario.Infrastructure.Services;
 using APIInventario.Core.Models;
 using APIInventario.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -86,7 +86,20 @@ namespace APIInventario.API.Controllers
             if (producto == null)
                 return NotFound("¡Producto no encontrado!");
 
-            await _productoRepo.ActualizarAsync(productoActualizado);
+            producto.Nombre = productoActualizado.Nombre;
+            producto.Descripcion = productoActualizado.Descripcion;
+            producto.Precio = productoActualizado.Precio;
+            producto.Cantidad = productoActualizado.Cantidad;
+
+            /*if (producto.Cantidad < 5)
+            {
+                var emailService = HttpContext.RequestServices.GetService<EmailService>();
+                var adminEmail = HttpContext.RequestServices.GetService<IConfiguration>().GetSection("EmailSettings:AdminEmail").Value;
+                await emailService.EnviarCorreoAsync(adminEmail, "¡Inventario Bajo!", $"El producto {producto.Nombre} tiene menos de 5 unidades.");
+            }*/
+
+
+            await _productoRepo.ActualizarAsync(producto);
             return Ok("¡Producto actualizado con éxito!");
         }
 
