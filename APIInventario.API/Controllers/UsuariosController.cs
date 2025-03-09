@@ -1,11 +1,13 @@
 ﻿using APIInventario.Core.Interfaces;
 using APIInventario.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIINVENTARIO.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuarioRepository _usuarioRepo;
