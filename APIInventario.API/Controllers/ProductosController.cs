@@ -37,6 +37,8 @@ namespace APIInventario.API.Controllers
                 p.Descripcion,
                 p.Precio,
                 p.Cantidad,
+                p.CategoriaId,
+                p.FechaCreacion,
                 Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoría"
             });
 
@@ -104,6 +106,7 @@ namespace APIInventario.API.Controllers
             producto.Descripcion = productoActualizado.Descripcion;
             producto.Precio = productoActualizado.Precio;
             producto.Cantidad = productoActualizado.Cantidad;
+            producto.CategoriaId = productoActualizado.CategoriaId;
 
             /*if (producto.Cantidad < 5)
             {
