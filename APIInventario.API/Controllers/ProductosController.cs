@@ -12,11 +12,15 @@ namespace APIInventario.API.Controllers
     public class ProductosController : ControllerBase
     {
         private readonly IProductoRepository _productoRepo;
+        private readonly PdfService _pdfService;
 
-        public ProductosController(IProductoRepository productoRepo)
+
+        public ProductosController(IProductoRepository productoRepo, PdfService pdfService)
         {
             _productoRepo = productoRepo;
+            _pdfService = pdfService;
         }
+
 
         [HttpGet("listar")]
         [Authorize(Roles = "admin,empleado")]
@@ -25,6 +29,16 @@ namespace APIInventario.API.Controllers
             var productos = await _productoRepo.ObtenerTodosAsync();
             if (productos == null || !productos.Any())
                 return NotFound("¡No hay productos disponibles!");
+
+            var productosDTO = productos.Select(p => new
+            {
+                p.Id,
+                p.Nombre,
+                p.Descripcion,
+                p.Precio,
+                p.Cantidad,
+                Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoría"
+            });
 
             return Ok(productos);
         }
@@ -116,6 +130,20 @@ namespace APIInventario.API.Controllers
 
             await _productoRepo.EliminarAsync(id);
             return Ok("¡Producto eliminado con éxito!");
+        }
+
+        [HttpGet("reporte-inventario-bajo")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GenerarReporteInventarioBajo()
+        {
+            var productosBajoInventario = await _productoRepo.ObtenerTodosAsync();
+            var productosFiltrados = productosBajoInventario.Where(p => p.Cantidad < 5).ToList();
+
+            if (!productosFiltrados.Any())
+                return NotFound("No hay productos con inventario bajo.");
+
+            var pdfBytes = _pdfService.GenerarReporteProductosBajoInventario(productosFiltrados);
+            return File(pdfBytes, "application/pdf", "Reporte_Inventario_Bajo.pdf");
         }
     }
 }

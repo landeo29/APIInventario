@@ -15,9 +15,11 @@ namespace APIGestionInventarios.Infrastructure.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Producto>> ObtenerTodosAsync()
+        public async Task<IEnumerable<Producto >> ObtenerTodosAsync()
         {
-            return await _context.Productos.ToListAsync();
+            return await _context.Productos
+            .Include(p => p.Categoria) 
+            .ToListAsync();
         }
 
         public async Task<Producto> ObtenerPorIdAsync(int id)

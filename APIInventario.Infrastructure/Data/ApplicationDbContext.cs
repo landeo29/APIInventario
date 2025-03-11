@@ -21,7 +21,7 @@ namespace APIInventario.Infrastructure.Data
                 entity.Property(e => e.Username).HasColumnName("username");
                 entity.Property(e => e.Password).HasColumnName("password");
                 entity.Property(e => e.Role).HasColumnName("role");
-                entity.Property(e => e.FechaRegistro).HasColumnName("fecharegistro");
+                entity.Property(e => e.FechaRegistro).HasColumnName("fecha_registro");
             });
 
             modelBuilder.Entity<Producto>(entity =>
