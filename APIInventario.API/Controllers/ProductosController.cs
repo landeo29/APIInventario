@@ -40,7 +40,7 @@ namespace APIInventario.API.Controllers
                 Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoría"
             });
 
-            return Ok(productos);
+            return Ok(productosDTO);
         }
 
         [HttpPost("crear")]
