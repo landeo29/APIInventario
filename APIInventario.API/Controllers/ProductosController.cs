@@ -12,13 +12,11 @@ namespace APIInventario.API.Controllers
     public class ProductosController : ControllerBase
     {
         private readonly IProductoRepository _productoRepo;
-        private readonly PdfService _pdfService;
 
 
-        public ProductosController(IProductoRepository productoRepo, PdfService pdfService)
+        public ProductosController(IProductoRepository productoRepo)
         {
             _productoRepo = productoRepo;
-            _pdfService = pdfService;
         }
 
 
@@ -40,7 +38,7 @@ namespace APIInventario.API.Controllers
                 p.CategoriaId,
                 p.FechaCreacion,
                 Categoria = p.Categoria != null ? p.Categoria.Nombre : "Sin categoría"
-            });
+            }).ToList();
 
             return Ok(productosDTO);
         }
@@ -157,7 +155,7 @@ namespace APIInventario.API.Controllers
 
             using var httpClient = new HttpClient();
             var response = await httpClient.PostAsJsonAsync("https://api.ultramsg.com/instance110077/messages/chat", payload);
-            var responseBody = await response.Content.ReadAsStringAsync(); 
+            var responseBody = await response.Content.ReadAsStringAsync(); // Obtener respuesta
 
 
             if (!response.IsSuccessStatusCode)

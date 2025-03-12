@@ -20,8 +20,8 @@ namespace APIInventario.Core.Models
     
         public class ReporteInventarioDto
         {
-            public string NumeroDestino { get; set; }  // Número de WhatsApp del admin
-            public string Mensaje { get; set; }  // Mensaje a enviar
+            public string NumeroDestino { get; set; }  
+            public string Mensaje { get; set; }  
         }
     
 
