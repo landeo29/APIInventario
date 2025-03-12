@@ -135,18 +135,39 @@ namespace APIInventario.API.Controllers
             return Ok("¡Producto eliminado con éxito!");
         }
 
-        [HttpGet("reporte-inventario-bajo")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> GenerarReporteInventarioBajo()
+        [HttpPost("reportar-inventario")]
+        [Authorize(Roles = "empleado")]
+        public async Task<IActionResult> ReportarInventario([FromBody] ReporteInventarioDto reporte)
         {
-            var productosBajoInventario = await _productoRepo.ObtenerTodosAsync();
-            var productosFiltrados = productosBajoInventario.Where(p => p.Cantidad < 5).ToList();
+            if (string.IsNullOrWhiteSpace(reporte.NumeroDestino) || string.IsNullOrWhiteSpace(reporte.Mensaje))
+            {
+                return BadRequest("Número de destino y mensaje son obligatorios.");
+            }
 
-            if (!productosFiltrados.Any())
-                return NotFound("No hay productos con inventario bajo.");
+            // LOG PARA VER LOS DATOS RECIBIDOS
+            Console.WriteLine($"📩 Reporte recibido - Número: {reporte.NumeroDestino}, Mensaje: {reporte.Mensaje}");
 
-            var pdfBytes = _pdfService.GenerarReporteProductosBajoInventario(productosFiltrados);
-            return File(pdfBytes, "application/pdf", "Reporte_Inventario_Bajo.pdf");
+            var payload = new
+            {
+                token = "slu4ht68lrcmijvs",  
+                to = reporte.NumeroDestino,
+                body = reporte.Mensaje,
+                priority = 10
+            };
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsJsonAsync("https://api.ultramsg.com/instance110077/messages/chat", payload);
+            var responseBody = await response.Content.ReadAsStringAsync(); 
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode((int)response.StatusCode, "Error al enviar el mensaje.");
+            }
+
+            return Ok("Mensaje enviado correctamente.");
         }
+
+
     }
 }
