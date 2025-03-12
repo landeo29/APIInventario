@@ -8,7 +8,7 @@ namespace APIInventario.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public class CategoriasController : ControllerBase
     {
         private readonly ICategoriaRepository _categoriaRepo;
@@ -19,6 +19,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpGet("listar")]
+        [Authorize(Roles = "admin,empleado")]
         public async Task<IActionResult> ListarCategorias()
         {
             var categorias = await _categoriaRepo.ObtenerTodasAsync();
@@ -29,6 +30,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpPost("crear")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CrearCategoria([FromBody] Categoria categoria)
         {
             if (string.IsNullOrWhiteSpace(categoria.Nombre))
@@ -39,6 +41,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpGet("obtener/{id}")]
+        [Authorize(Roles = "admin,empleado")]
         public async Task<IActionResult> ObtenerCategoria(int id)
         {
             var categoria = await _categoriaRepo.ObtenerPorIdAsync(id);
@@ -49,6 +52,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpPut("actualizar/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> ActualizarCategoria(int id, [FromBody] Categoria categoriaActualizada)
         {
             var categoria = await _categoriaRepo.ObtenerPorIdAsync(id);
@@ -65,6 +69,7 @@ namespace APIInventario.API.Controllers
         }
 
         [HttpDelete("eliminar/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> EliminarCategoria(int id)
         {
             var categoria = await _categoriaRepo.ObtenerPorIdAsync(id);
