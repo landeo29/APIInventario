@@ -1,7 +1,6 @@
 ﻿using APIInventario.Core.Models;
 using APIInventario.Infrastructure.Data;
 using APIInventario.Infrastructure.Repositories.Interfaces;
-using APIInventario.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace APIGestionInventarios.Infrastructure.Repositories.Implementations
@@ -48,5 +47,13 @@ namespace APIGestionInventarios.Infrastructure.Repositories.Implementations
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<List<Producto>> ObtenerProductosConStockBajo()
+        {
+            return await _context.Productos
+                .Where(p => p.Cantidad < 5) 
+                .ToListAsync();
+        }
+
     }
 }

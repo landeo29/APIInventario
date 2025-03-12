@@ -9,5 +9,7 @@ namespace APIInventario.Infrastructure.Repositories.Interfaces
         Task AgregarAsync(Producto producto);
         Task ActualizarAsync(Producto producto);
         Task EliminarAsync(int id);
+        Task<List<Producto>> ObtenerProductosConStockBajo();
+
     }
 }

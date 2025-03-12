@@ -1,7 +1,6 @@
 ﻿using APIInventario.Core.Models;
 using APIInventario.Infrastructure.Data;
 using APIInventario.Infrastructure.Services;
-using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

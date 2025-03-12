@@ -13,12 +13,10 @@ namespace APIInventario.API.Controllers
     {
         private readonly IProductoRepository _productoRepo;
 
-
         public ProductosController(IProductoRepository productoRepo)
         {
             _productoRepo = productoRepo;
         }
-
 
         [HttpGet("listar")]
         [Authorize(Roles = "admin,empleado")]
@@ -106,14 +104,6 @@ namespace APIInventario.API.Controllers
             producto.Cantidad = productoActualizado.Cantidad;
             producto.CategoriaId = productoActualizado.CategoriaId;
 
-            /*if (producto.Cantidad < 5)
-            {
-                var emailService = HttpContext.RequestServices.GetService<EmailService>();
-                var adminEmail = HttpContext.RequestServices.GetService<IConfiguration>().GetSection("EmailSettings:AdminEmail").Value;
-                await emailService.EnviarCorreoAsync(adminEmail, "¡Inventario Bajo!", $"El producto {producto.Nombre} tiene menos de 5 unidades.");
-            }*/
-
-
             await _productoRepo.ActualizarAsync(producto);
             return Ok("¡Producto actualizado con éxito!");
         }
@@ -142,7 +132,6 @@ namespace APIInventario.API.Controllers
                 return BadRequest("Número de destino y mensaje son obligatorios.");
             }
 
-            // LOG PARA VER LOS DATOS RECIBIDOS
             Console.WriteLine($"📩 Reporte recibido - Número: {reporte.NumeroDestino}, Mensaje: {reporte.Mensaje}");
 
             var payload = new
@@ -155,7 +144,7 @@ namespace APIInventario.API.Controllers
 
             using var httpClient = new HttpClient();
             var response = await httpClient.PostAsJsonAsync("https://api.ultramsg.com/instance110077/messages/chat", payload);
-            var responseBody = await response.Content.ReadAsStringAsync(); // Obtener respuesta
+            var responseBody = await response.Content.ReadAsStringAsync();
 
 
             if (!response.IsSuccessStatusCode)
@@ -165,7 +154,5 @@ namespace APIInventario.API.Controllers
 
             return Ok("Mensaje enviado correctamente.");
         }
-
-
     }
 }
