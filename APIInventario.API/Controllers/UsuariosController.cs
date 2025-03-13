@@ -2,12 +2,13 @@
 using APIInventario.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using BCrypt.Net;
 
 namespace APIINVENTARIO.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    [Authorize]
     public class UsuariosController : ControllerBase
     {
         private readonly IUsuarioRepository _usuarioRepo;
@@ -18,6 +19,7 @@ namespace APIINVENTARIO.API.Controllers
         }
 
         [HttpGet("listar")]
+        [Authorize(Roles = "admin,empleado")]
         public async Task<IActionResult> ListarUsuarios()
         {
             var usuarios = await _usuarioRepo.ObtenerTodosAsync();
@@ -27,6 +29,7 @@ namespace APIINVENTARIO.API.Controllers
         }
 
         [HttpPost("crear")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CrearUsuario([FromBody] Usuario usuario)
         {
             if (!ModelState.IsValid)
@@ -39,11 +42,14 @@ namespace APIINVENTARIO.API.Controllers
             if (existeUsuario != null)
                 return Conflict("El nombre de usuario ya está en uso.");
 
+            usuario.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
+
             await _usuarioRepo.AgregarAsync(usuario);
             return Ok("Usuario creado con éxito!");
         }
 
         [HttpGet("obtener/{id}")]
+        [Authorize(Roles = "admin,empleado")]
         public async Task<IActionResult> ObtenerUsuario(int id)
         {
             if (id <= 0)
@@ -59,25 +65,30 @@ namespace APIINVENTARIO.API.Controllers
         [HttpPut("actualizar/{id}")]
         public async Task<IActionResult> ActualizarUsuario(int id, [FromBody] Usuario usuarioActualizado)
         {
-            if (id <= 0)
-                return BadRequest("ID inválido.");
+            if (usuarioActualizado == null || id != usuarioActualizado.Id)
+                return BadRequest("Los datos enviados son inválidos.");
 
-            if (!ModelState.IsValid)
-                return BadRequest("Datos inválidos.");
-
-            var usuario = await _usuarioRepo.ObtenerPorIdAsync(id);
-            if (usuario == null)
+            var usuarioExistente = await _usuarioRepo.ObtenerPorIdAsync(id);
+            if (usuarioExistente == null)
                 return NotFound("Usuario no encontrado.");
 
-            usuario.Username = usuarioActualizado.Username;
-            usuario.Password = usuarioActualizado.Password;
-            usuario.Role = usuarioActualizado.Role;
+            usuarioExistente.Username = usuarioActualizado.Username;
+            usuarioExistente.Role = usuarioActualizado.Role;
 
-            await _usuarioRepo.ActualizarAsync(usuario);
-            return Ok("Usuario actualizado con éxito!");
+            if (!string.IsNullOrWhiteSpace(usuarioActualizado.Password))
+            {
+                usuarioExistente.Password = BCrypt.Net.BCrypt.HashPassword(usuarioActualizado.Password);
+            }
+
+            await _usuarioRepo.ActualizarAsync(usuarioExistente);
+            return Ok(new { mensaje = "Usuario actualizado correctamente" });
         }
 
+
+
+
         [HttpDelete("eliminar/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> EliminarUsuario(int id)
         {
             if (id <= 0)

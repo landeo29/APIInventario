@@ -2,6 +2,9 @@
 using APIInventario.Core.Models;
 using APIInventario.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Generators;
+using BCrypt.Net;
+
 
 namespace APIInventario.Infrastructure.Repositories.Implementations
 {
@@ -35,13 +38,28 @@ namespace APIInventario.Infrastructure.Repositories.Implementations
             await _context.SaveChangesAsync();
         }
 
+
+
         public async Task ActualizarAsync(Usuario usuario)
         {
-            _context.Usuarios.Update(usuario);
-            await _context.SaveChangesAsync();
+                var usuarioExistente = await _context.Usuarios.FindAsync(usuario.Id);
+                if (usuarioExistente == null)
+                    throw new Exception("Usuario no encontrado");
+
+                usuarioExistente.Username = usuario.Username;
+                usuarioExistente.Role = usuario.Role;
+
+                if (!string.IsNullOrWhiteSpace(usuario.Password))
+                {
+                    usuarioExistente.Password = BCrypt.Net.BCrypt.HashPassword(usuario.Password);
+                }
+
+                await _context.SaveChangesAsync();
         }
 
-        public async Task EliminarAsync(int id)
+
+
+    public async Task EliminarAsync(int id)
         {
             var usuario = await ObtenerPorIdAsync(id);
             if (usuario != null)
